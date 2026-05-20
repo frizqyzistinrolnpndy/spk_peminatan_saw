@@ -21,6 +21,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="rekomendasi.php">Hasil Rekomendasi</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="evaluasi.php">Evaluasi Sistem</a>
+                </li>
             </ul>
         </div>
     </div>
