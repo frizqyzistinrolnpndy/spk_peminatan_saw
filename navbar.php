@@ -24,6 +24,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="evaluasi.php">Evaluasi Sistem</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-bold text-success" href="integrasi.php">Ranking Hybrid</a>
+                </li>
             </ul>
         </div>
     </div>
