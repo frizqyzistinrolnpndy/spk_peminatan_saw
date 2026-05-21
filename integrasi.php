@@ -32,7 +32,7 @@ if (!empty($id_siswa_terpilih)) {
         while ($row = mysqli_fetch_assoc($q_matriks)) {
             $data_matriks[] = $row;
             
-            // Siapkan paket data (payload) untuk dikirim ke API Python
+            // Siapkan paket data (payload) untuk dikirim ke API Python 
             $payload_ml[] = [
                 'nama_mapel' => $row['nama_mapel'],
                 'minat' => (float)$row['c1_minat'],
@@ -42,29 +42,29 @@ if (!empty($id_siswa_terpilih)) {
             ];
         }
 
-        // 4. KIRIM DATA KE FASTAPI MENGGUNAKAN cURL PHP
-        $ch = curl_init("http://127.0.0.1:8000/prediksi-batch");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_ml));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        // 4. KIRIM DATA KE FASTAPI MENGGUNAKAN cURL PHP 
+        $ch = curl_init("http://127.0.0.1:8000/prediksi-batch"); 
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+        curl_setopt($ch, CURLOPT_POST, true); 
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload_ml)); 
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']); 
         
-        $response = curl_exec($ch);
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $response = curl_exec($ch); 
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+        curl_close($ch); 
 
-        if ($http_code !== 200) {
-            die("<div class='alert alert-danger'>API Machine Learning Python belum aktif! Jalankan 'uvicorn api_ml:app' terlebih dahulu.</div>");
+        if ($http_code !== 200) { 
+            die("<div class='alert alert-danger'>API Machine Learning Python belum aktif! Jalankan 'uvicorn api_ml:app' terlebih dahulu.</div>"); 
         }
 
-        // Parse hasil prediksi biner dari API AI
-        $response_data = json_decode($response, true);
-        $prediksi_ml = $response_data['hasil'];
+        // Parse hasil prediksi dari API AI 
+        $response_data = json_decode($response, true); 
+        $prediksi_ml = $response_data['hasil']; 
 
-        // 5. GABUNGKAN HITUNGAN SAW + PREDIKSI ML (HYBRID INTERACTION)
-        $bobot_ml = 0.3; // Kontribusi AI sebesar 30% ke skor akhir
+        // 5. GABUNGKAN HITUNGAN SAW + PREDIKSI ML (HYBRID INTERACTION) 
+        $bobot_ml = 0.3; // Kontribusi AI sebesar 30% ke skor akhir 
         foreach ($data_matriks as $i => $row) {
-            // Normalisasi SAW
+            // Normalisasi SAW 
             $norm_c1 = $row['c1_minat'] / $data_max['max_c1'];
             $norm_c2 = $row['c2_bakat'] / $data_max['max_c2'];
             $norm_c3 = $row['c3_nilai'] / $data_max['max_c3'];
@@ -72,25 +72,25 @@ if (!empty($id_siswa_terpilih)) {
 
             $skor_saw = ($norm_c1 * $bobot['C1']) + ($norm_c2 * $bobot['C2']) + ($norm_c3 * $bobot['C3']) + ($norm_c4 * $bobot['C4']);
 
-            // Ambil output probabilitas dari AI Python
-            $proba_ml = $prediksi_ml[$i]['proba'];
-            $label_ml = $prediksi_ml[$i]['label'];
+            // Ambil output dari AI Python 
+            $proba_ml = $prediksi_ml[$i]['proba']; 
+            $label_ml = $prediksi_ml[$i]['label']; 
 
-            // Rumus Integrasi Hybrid
-            $skor_hybrid = (0.7 * $skor_saw) + ($bobot_ml * $proba_ml);
+            // Rumus Integrasi Hybrid 
+            $skor_hybrid = (0.7 * $skor_saw) + ($bobot_ml * $proba_ml); 
 
-            $hasil_hybrid[] = [
-                'nama_mapel' => $row['nama_mapel'],
-                'skor_saw' => round($skor_saw, 4),
-                'proba_ml' => round($proba_ml, 4),
-                'skor_hybrid' => round($skor_hybrid, 4),
-                'status' => $label_ml ? 'Direkomendasikan' : 'Tidak Direkomendasikan'
+            $hasil_hybrid[] = [ 
+                'nama_mapel' => $row['nama_mapel'], 
+                'skor_saw' => round($skor_saw, 4), 
+                'proba_ml' => round($proba_ml, 4), 
+                'skor_hybrid' => round($skor_hybrid, 4), 
+                'status' => $label_ml ? 'Direkomendasikan' : 'Tidak Direkomendasikan' 
             ];
         }
 
-        // 6. Urutkan Ranking Berdasarkan Skor Hybrid Terbesar (Aman dari Isu Intelephense)
+        // 6. Urutkan Ranking Berdasarkan Skor Hybrid Terbesar 
         $kolom_hybrid = array_column($hasil_hybrid, 'skor_hybrid');
-        array_multisort($kolom_hybrid, SORT_DESC, $hasil_hybrid);
+        array_multisort($kolom_hybrid, SORT_DESC, $hasil_hybrid); 
     }
 }
 ?>
@@ -108,7 +108,7 @@ if (!empty($id_siswa_terpilih)) {
 <?php include 'navbar.php'; ?>
 
 <div class="container mb-5">
-    <h3 class="mb-4 text-secondary fw-bold">Hasil Akhir: Simulasi Ranking Hybrid (SAW + Machine Learning)</h3>
+    <h3 class="mb-4 text-secondary fw-bold">Hasil Akhir: Simulasi Ranking Hybrid (SAW + Machine Learning)</h3> 
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
@@ -131,7 +131,7 @@ if (!empty($id_siswa_terpilih)) {
     <?php if (!empty($id_siswa_terpilih)): ?>
         <?php if (!empty($hasil_hybrid)): ?>
             <div class="alert alert-success shadow-sm mb-4">
-                Analisis Berhasil! Hasil di bawah merupakan perpaduan kalkulasi pembobotan kaku <strong>SAW (70%)</strong> dengan probabilitas kecerdasan pola data historis dari <strong>Machine Learning Random Forest (30%)</strong>.
+                Analisis Berhasil! Hasil di bawah merupakan perpaduan kalkulasi pembobotan kaku <strong>SAW (70%)</strong> dengan probabilitas kecerdasan pola data historis dari <strong>Machine Learning Random Forest (30%)</strong>. 
             </div>
 
             <div class="card shadow-sm border-0">
@@ -140,28 +140,31 @@ if (!empty($id_siswa_terpilih)) {
                         <table class="table table-hover table-striped align-middle mb-0 text-center">
                             <thead class="table-dark">
                                 <tr>
-                                    <th width="10%">Rank</th>
-                                    <th class="text-start ps-4">Mata Pelajaran Pilihan</th>
-                                    <th>Skor SAW (70%)</th>
-                                    <th>Proba ML (30%)</th>
-                                    <th>Skor Akhir Hybrid</th>
-                                    <th>Status Kelayakan AI</th>
+                                    <th width="10%">Rank</th> 
+                                    <th class="text-start ps-4">Mata Pelajaran Pilihan</th> 
+                                    <th>Skor SAW (70%)</th> 
+                                    <th>Proba ML (30%)</th> 
+                                    <th>Skor Akhir Hybrid</th> 
+                                    <th>Status Kelayakan AI</th> 
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php 
                                 $rank = 1;
                                 foreach ($hasil_hybrid as $h): 
-                                    $row_class = ($rank <= 2) ? 'table-success fw-bold' : '';
-                                    $badge_class = ($h['status'] == 'Direkomendasikan') ? 'bg-success' : 'bg-secondary';
+                                    // PERUBAHAN UTAMA: Pengecekan dilakukan secara dinamis berdasarkan status rekomendasi AI
+                                    $is_rekomen = ($h['status'] == 'Direkomendasikan'); 
+                                    $row_class = $is_rekomen ? 'table-success fw-bold' : '';
+                                    $badge_rank_class = $is_rekomen ? 'bg-success' : 'bg-secondary';
+                                    $badge_status_class = $is_rekomen ? 'bg-success' : 'bg-secondary';
                                 ?>
                                 <tr class="<?php echo $row_class; ?>">
-                                    <td><span class="badge bg-dark fs-6 px-3"><?php echo $rank; ?></span></td>
-                                    <td class="text-start ps-4 text-dark fs-5"><?php echo $h['nama_mapel']; ?></td>
-                                    <td class="text-muted"><?php echo $h['skor_saw']; ?></td>
-                                    <td class="text-muted"><?php echo $h['proba_ml']; ?></td>
-                                    <td class="text-primary fs-5 fw-bold"><?php echo $h['skor_hybrid']; ?></td>
-                                    <td><span class="badge <?php echo $badge_class; ?> p-2"><?php echo $h['status']; ?></span></td>
+                                    <td><span class="badge <?php echo $badge_rank_class; ?> fs-6 px-3"><?php echo $rank; ?></span></td> 
+                                    <td class="text-start ps-4 text-dark fs-5"><?php echo $h['nama_mapel']; ?></td> 
+                                    <td class="text-muted"><?php echo $h['skor_saw']; ?></td> 
+                                    <td class="text-muted"><?php echo $h['proba_ml']; ?></td> 
+                                    <td class="text-primary fs-5 fw-bold"><?php echo $h['skor_hybrid']; ?></td> 
+                                    <td><span class="badge <?php echo $badge_status_class; ?> p-2"><?php echo $h['status']; ?></span></td> 
                                 </tr>
                                 <?php 
                                 $rank++;

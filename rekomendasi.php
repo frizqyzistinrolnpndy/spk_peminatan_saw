@@ -146,8 +146,9 @@ if (!empty($id_siswa_terpilih)) {
                                 <?php 
                                 $rank = 1;
                                 foreach ($hasil_akhir as $h): 
-                                    $badge_color = ($rank <= 2) ? 'bg-success' : 'bg-secondary';
-                                    $row_style = ($rank == 1) ? 'table-success fw-bold' : '';
+                                    // BAGIAN YANG DIUBAH: Jika rank 1, 2, 3, atau 4, berikan warna hijau sukses
+                                    $badge_color = ($rank <= 4) ? 'bg-success' : 'bg-secondary';
+                                    $row_style = ($rank <= 4) ? 'table-success fw-bold' : '';
                                 ?>
                                 <tr class="<?php echo $row_style; ?>">
                                     <td class="text-center">
